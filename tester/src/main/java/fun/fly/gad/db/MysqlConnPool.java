@@ -67,37 +67,39 @@ public class MysqlConnPool implements ConnPool {
     @Override
     public Connection getConnection() {
 //        synchronized (lock) {
-            Connection conn = threadLocal.get();
-            if (null == conn) {
-                try {
-                    conn = connQuene.size() > 0 ? connQuene.take() : null;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (conn == null) {
-                    if (maxPoolSize > counter.intValue()) {
-                        conn = instance.getInnerConn();
-                        counter.incrementAndGet();
-                        threadLocal.set(conn);
-                        return conn;
-                    } else {
-                        try {
-                            log.info("线程:{},当前已经创建的链接数:{},队列中可用链接数:{}"
-                                    , Thread.currentThread()
-                                    , counter.intValue()
-                                    , connQuene.size() - connQuene.remainingCapacity());
-
-                            lock.wait();
-                            return getConnection();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } else {
-                    threadLocal.set(conn);
-                }
+        Connection conn = threadLocal.get();
+        if (null == conn) {
+            try {
+                conn = connQuene.size() > 0 ? connQuene.take() : null;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            return conn;
+            if (conn == null) {
+                if (maxPoolSize > counter.intValue()) {
+                    conn = instance.getInnerConn();
+                    counter.incrementAndGet();
+                    threadLocal.set(conn);
+                    return conn;
+                } else {
+                    try {
+                        log.info("线程:{},当前已经创建的链接数:{},队列中可用链接数:{}"
+                                , Thread.currentThread()
+                                , counter.intValue()
+                                , connQuene.size() - connQuene.remainingCapacity());
+                        // 防止虚假唤醒
+                        while (maxPoolSize <= counter.intValue()) {
+                            lock.wait();
+                        }
+                        return getConnection();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                threadLocal.set(conn);
+            }
+        }
+        return conn;
 //        }
     }
 
