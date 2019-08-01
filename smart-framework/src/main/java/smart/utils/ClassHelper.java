@@ -2,7 +2,6 @@ package smart.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import smart.config.Config;
-import smart.config.DefaultConfig;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
@@ -24,6 +23,7 @@ public final class ClassHelper {
 
     /**
      * 获取包含注解？的类
+     *
      * @param annotationClass
      * @return
      */
@@ -31,6 +31,19 @@ public final class ClassHelper {
         Set<Class<?>> set = new HashSet<>(128);
         for (Class<?> c : CLASS_SET) {
             if (c.isAnnotationPresent(annotationClass)) {
+                set.add(c);
+            }
+        }
+        return set;
+    }
+
+    /**
+     * 获取包名下某父类(或接口)的所有子类
+     */
+    public static Set<Class<?>> getClassSetBySuper(Class<?> superclass) {
+        Set<Class<?>> set = new HashSet<>(12);
+        for (Class<?> c : CLASS_SET) {
+            if (superclass.isAssignableFrom(c)) {
                 set.add(c);
             }
         }

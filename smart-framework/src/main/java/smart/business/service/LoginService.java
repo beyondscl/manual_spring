@@ -9,4 +9,7 @@ import smart.annotations.Sservice;
  */
 @Sservice
 public class LoginService {
+    public void doLogin() {
+        System.out.println("LoginService" + "哈哈");
+    }
 }
