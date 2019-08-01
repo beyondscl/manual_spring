@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * @author : pettygadfly@gmail.com
- * @description :
+ * @description : 定义一个切面，用于增强？注解的类
  * @date : 2019-08-01
  */
 @Documented

@@ -4,7 +4,9 @@ import java.lang.reflect.Method;
 
 /**
  * @author : pettygadfly@gmail.com
- * @description :
+ * @description : 切面的抽象实现，
+ * 增强类的具体实现可以重写固定的几个方法，
+ * 比如拦截service开启事物，拦截controller记录请求参数与时间等等
  * @date : 2019-08-01
  */
 public class AspectProxy implements Proxy {
@@ -14,16 +16,12 @@ public class AspectProxy implements Proxy {
         Class<?> cls = proxyChain.getTargetClass();
         Method method = proxyChain.getTargetMethod();
         Object[] params = proxyChain.getMethodParams();
-        System.out.println("下面打印的都可以作为钩子方法，在具体的实现类中实现自己想要的即可");
-        System.out.println("比如拦截controller记录请求参数与时间");
-        System.out.println("比如拦截service开启事物");
         aspectStart();
         try {
             if (intercept(cls, method, params)) {
                 aspectBefore(cls, method, params);
                 result = proxyChain.doProxyChain();
                 aspectAfter(cls, method, params, result);
-
             } else {
                 result = proxyChain.doProxyChain();
             }
@@ -35,10 +33,8 @@ public class AspectProxy implements Proxy {
             throwable.printStackTrace();
         } finally {
             aspectEnd();
-
         }
         return result;
-
     }
 
     public void aspectError() {
@@ -56,6 +52,13 @@ public class AspectProxy implements Proxy {
     public void aspectStart() {
     }
 
+    /**
+     * 判断方法是否需要代理,由子类重写
+     * @param cls
+     * @param method
+     * @param params
+     * @return
+     */
     boolean intercept(Class<?> cls, Method method, Object[] params) {
         return true;
     }

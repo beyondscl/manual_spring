@@ -14,12 +14,30 @@ import java.util.*;
  * @date : 2019-08-01
  */
 public class AopHelper {
+    /**
+     * 初始化
+     */
     static {
+        /**
+         * proxyMap:
+         *  key : ServiceAspect.class,Controller.class....
+         *  value: ServiceAspect.class拦截的所有类，Controller.class拦截的所有类
+         */
         Map<Class<?>, Set<Class<?>>> proxyMap = createProxyMap();
+        /**
+         * targetMap:
+         * key : LoginService.class
+         * value: ServiceProxy,LogProxy 等等
+         */
         Map<Class<?>, List<Proxy>> targetMap = createTargetMap(proxyMap);
+
         for (Map.Entry<Class<?>, List<Proxy>> targetEntry : targetMap.entrySet()) {
             Class<?> targetClass = targetEntry.getKey();
             List<Proxy> proxyList = targetEntry.getValue();
+            /**
+             * 将LoginService.class 替换为代理LoginService.class$..类，
+             * 那么放在另外等集合里面，将原始的类保留
+             */
             Object proxy = ProxyManager.createProxy(targetClass, proxyList);
             BeanHelper.setBean(targetClass, proxy);
         }
