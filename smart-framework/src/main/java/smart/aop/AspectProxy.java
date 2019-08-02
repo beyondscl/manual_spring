@@ -59,7 +59,7 @@ public class AspectProxy implements Proxy {
      * @param params
      * @return
      */
-    boolean intercept(Class<?> cls, Method method, Object[] params) {
+    public boolean intercept(Class<?> cls, Method method, Object[] params) {
         return true;
     }
 }
